@@ -1,0 +1,7 @@
+header h1 {
+    background: linear-gradient(to right, #465AB8, #261360);
+    padding-left: 50%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color: white;
+}
