@@ -3,7 +3,10 @@ const searchHistoryEl = $('#searchHistory');
 
 function saveSearchHistory() {
     const newCity = $('#citySearch').val();
-
+    // later this will return not only if null but if city is invalid
+    if (!newCity) {
+        return;
+    }
     searchHistoryList.push(newCity);
     localStorage.setItem('searchHistory', JSON.stringify(searchHistoryList));
 }
@@ -14,7 +17,8 @@ function displaySearchHistory() {
     }
     
     for (var search of searchHistoryList) {
-        const searchCard = $('<div>').addClass('border m-2 bg-secondary text-center rounded-1');
+        const searchCard = $('<button>').addClass('border m-2 bg-secondary text-center rounded-1').attr('type', 'button');
+        searchCard.attr('id', search);
         searchCard.text(search);
         searchHistoryEl.append(searchCard);
     }
