@@ -92,37 +92,23 @@ function generateCard(city) {
 }
 
 
-function geoCodeCity (city) {
-    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city},CA&appid=f33bf20affa316ba4d95961d5e07550c`)
+function fetchCity (city) {
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city},CA&units=metric&appid=f33bf20affa316ba4d95961d5e07550c`)
         .then(function(response) {
             return response.json();
         })
         .then(function(data) {
-            if(data.length === 0){
-                console.log('superInvalid');
-                return;
-            }
-            else if(data[0].name === 'Fort St. James') {
-                console.log('invalid');
-                return;
-            }
-
-        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${data[0].lat}&lon=${data[0].lon}&units=metric&appid=f33bf20affa316ba4d95961d5e07550c`)
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {
-                dataHistoryArray.push(data);
-                localStorage.setItem('dataHistory', JSON.stringify(dataHistoryArray));
-                cardArea.empty();
-                displayForecastCard(data);
-                for (let i = 0; i < 40; i++){
-                    if(i%8 === 0) {
-                        generateCard(data.list[i]);
-                    }
+            dataHistoryArray.push(data);
+            localStorage.setItem('dataHistory', JSON.stringify(dataHistoryArray));
+            cardArea.empty();
+            displayForecastCard(data);
+            for (let i = 0; i < 40; i++){
+                if(i%8 === 0) {
+                    generateCard(data.list[i]);
                 }
-            })
-        })         
+            }
+        })
+             
 }
 
 $(document).ready(function (){
@@ -134,7 +120,21 @@ $(document).ready(function (){
     srcButton[0].addEventListener('click', function(event){
         event.preventDefault();
         const citySearched = $('#citySearch').val();
-        geoCodeCity(citySearched);
+        cardArea.empty();
+        for (data of dataHistoryArray) {
+            if(citySearched.toLowerCase() === data.city.name.toLowerCase()) {
+                if(dayjs(data.list[0].dt_txt).diff(dayjs(), 'd') < 1){
+                    displayForecastCard(data);
+                    for (let i = 0; i < 40; i++){
+                        if(i%8 === 0) {
+                            generateCard(data.list[i]);
+                        }
+                    }
+                    return;
+                } 
+            }
+        }
+        fetchCity(citySearched);
     });
 });
 
