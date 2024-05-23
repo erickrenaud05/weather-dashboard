@@ -1,6 +1,9 @@
 var searchHistoryList = JSON.parse(localStorage.getItem('searchHistory'));
 const searchHistoryEl = $('#searchHistory');
-
+var dataHistoryArray = JSON.parse(localStorage.getItem('dataHistory'));
+if(!dataHistoryArray) {
+    dataHistoryArray = [];
+}
 // fetch('https://api.openweathermap.org/data/2.5/forecast?lat=44.34&lon=10.99&appid=f33bf20affa316ba4d95961d5e07550c')
 //     .then(function(response) {
 //         return response.json();
@@ -48,32 +51,28 @@ function displaySearchHistory() {
     }
 }
 
-function displayForecastCard(cityData) {
+function displayForecastCard(city) {
     // everything is temporary for now until i start fetching from the api
     const mainCard = $('#mainCard');
     const mainCardCity = $('#cityName');
     const mainCardTemp = $('#temp');
     const mainCardWind = $('#wind');
     const mainCardHumidity = $('#humidity');
+    const mainCardDate = $('#date');
+    const mainCardEmoji = $('#emoji');
 
-    const city = 'alexandria';
-    const temp = '72';
-    const wind = 'lots';
-    const humidity = '73';
+    mainCardCity.text(city.city.name);
+    mainCardDate.text(city.list[0].dt_txt);
+    mainCardEmoji.text('emoji');
+    mainCardTemp.text(city.list[0].main.temp);
+    mainCardWind.text(city.list[0].wind.speed);
+    mainCardHumidity.text(city.list[0].main.humidity);
 
-    mainCardCity.text(city);
-    mainCardTemp.text(temp);
-    mainCardWind.text(wind);
-    mainCardHumidity.text(humidity);
-
-    const forecastCardArea = $('#forecastCards');
-
-    for (let i = 0; i < 5; i++) {
-        forecastCardArea.append(generateCard())
-    }
 }
 
-function generateCard() {
+const cardArea = $('#forecastCards');
+
+function generateCard(city) {
     // everything is temporary for now until i start fetching from the api
     const cardDate = $('<p>').addClass('fw-bold m-0');
     const cardEmoji = $('<p>').addClass('m-0');
@@ -82,26 +81,16 @@ function generateCard() {
     const cardHumidity = $('<p>').addClass('m-0 mb-1');
     const cardSection = $('<section>').addClass('card col-2 bg-secondary rounded-0 text-white');
 
-    cardDate.text('05/06/2024');
-    cardEmoji.text('sun');
-    cardTemp.text('56');
-    cardWind.text('45');
-    cardHumidity.text('78');
+    cardDate.text(city.dt_txt);
+    cardEmoji.text('emoji');
+    cardTemp.text(city.main.temp);
+    cardWind.text(city.wind.speed);
+    cardHumidity.text(city.main.humidity);
 
     cardSection.append(cardDate, cardEmoji, cardTemp, cardWind, cardHumidity);
-
-    return cardSection;
+    cardArea.append(cardSection);
 }
 
-function fetchCity (event) {
-    // fetch('https://api.openweathermap.org/data/2.5/forecast?lat=44.34&lon=10.99&appid=f33bf20affa316ba4d95961d5e07550c')
-//     .then(function(response) {
-//         return response.json();
-//     })
-//     .then(function(data) {
-//         return data
-//     })
-}
 
 function geoCodeCity (city) {
     fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city},CA&appid=f33bf20affa316ba4d95961d5e07550c`)
@@ -118,15 +107,22 @@ function geoCodeCity (city) {
                 return;
             }
 
-        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${data[0].lat}&lon=${data[0].lon}&appid=f33bf20affa316ba4d95961d5e07550c`)
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${data[0].lat}&lon=${data[0].lon}&units=metric&appid=f33bf20affa316ba4d95961d5e07550c`)
             .then(function(response) {
                 return response.json();
             })
             .then(function(data) {
-                console.log(data);
+                dataHistoryArray.push(data);
+                localStorage.setItem('dataHistory', JSON.stringify(dataHistoryArray));
+                cardArea.empty();
+                displayForecastCard(data);
+                for (let i = 0; i < 40; i++){
+                    if(i%8 === 0) {
+                        generateCard(data.list[i]);
+                    }
+                }
             })
-        })
-           
+        })         
 }
 
 $(document).ready(function (){
