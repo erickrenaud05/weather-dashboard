@@ -1,6 +1,30 @@
 var searchHistoryList = JSON.parse(localStorage.getItem('searchHistory'));
 const searchHistoryEl = $('#searchHistory');
 
+// fetch('https://api.openweathermap.org/data/2.5/forecast?lat=44.34&lon=10.99&appid=f33bf20affa316ba4d95961d5e07550c')
+//     .then(function(response) {
+//         return response.json();
+//     })
+//     .then(function(data) {
+//         console.log(data);
+//     })
+
+//http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
+//response.lat
+//response.lon
+
+//response.list[0-5].dt for unix time
+//response.list[0-5].main.(temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf)
+//response.list[0-5].weather.(id, main, description, icon)
+//response.list[0-5].clouds.(all)
+//response.list[0-5].wind.(speed, deg, gust)
+//response.list[0-5].visibility
+//response.list[0-5].pop
+//response.list[0-5].rain.3h
+//response.list[0-5].sys.pod
+//response.list[0-5].dt_txt for formatted date
+
+
 function saveSearchHistory() {
     const newCity = $('#citySearch').val();
     // later this will return not only if null but if city is invalid
@@ -24,7 +48,7 @@ function displaySearchHistory() {
     }
 }
 
-function displayForecastCard() {
+function displayForecastCard(cityData) {
     // everything is temporary for now until i start fetching from the api
     const mainCard = $('#mainCard');
     const mainCardCity = $('#cityName');
@@ -69,9 +93,52 @@ function generateCard() {
     return cardSection;
 }
 
+function fetchCity (event) {
+    // fetch('https://api.openweathermap.org/data/2.5/forecast?lat=44.34&lon=10.99&appid=f33bf20affa316ba4d95961d5e07550c')
+//     .then(function(response) {
+//         return response.json();
+//     })
+//     .then(function(data) {
+//         return data
+//     })
+}
+
+function geoCodeCity (city) {
+    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city},CA&appid=f33bf20affa316ba4d95961d5e07550c`)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.length === 0){
+                console.log('superInvalid');
+                return;
+            }
+            else if(data[0].name === 'Fort St. James') {
+                console.log('invalid');
+                return;
+            }
+
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${data[0].lat}&lon=${data[0].lon}&appid=f33bf20affa316ba4d95961d5e07550c`)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                console.log(data);
+            })
+        })
+           
+}
+
 $(document).ready(function (){
-    displayForecastCard();
+    // displayForecastCard();
     displaySearchHistory();
-    $('.btn-search').click(saveSearchHistory);
+    // $('.btn-search').click(saveSearchHistory);
+    
+    const srcButton = $('#btn-search1');
+    srcButton[0].addEventListener('click', function(event){
+        event.preventDefault();
+        const citySearched = $('#citySearch').val();
+        geoCodeCity(citySearched);
+    });
 });
 
