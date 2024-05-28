@@ -94,7 +94,7 @@ function display5DayForecastCard (citySearched) {
             } 
         }
     }
-    return 1;
+    fetchCity(citySearched)
 }
 
 function fetchCity (city) {  
@@ -133,17 +133,15 @@ $(document).ready(function (){
     const cityButton = $('#searchHistory');
 
     cityButton[0].addEventListener('click', function(event){
-        display5DayForecastCard(event.target.id);
+        if(event.target.type === 'button') {
+            display5DayForecastCard(event.target.id);
+        }
     })
 
     srcButton[0].addEventListener('click', function(event){
         event.preventDefault();
         const citySearched = $('#citySearch').val();
-        var status =  display5DayForecastCard(citySearched);
-        
-        if(status === 1) {
-            fetchCity(citySearched);        
-        }
+        display5DayForecastCard(citySearched);
     });
 });
 
