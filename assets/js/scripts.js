@@ -153,7 +153,12 @@ function fetchCity (city) {
 
 $(document).ready(function (){
     const cityToDisplay = dataHistoryArray.length - 1;
-    display5DayForecastCard(dataHistoryArray[cityToDisplay].city.name);
+
+    if(cityToDisplay < 0) {
+        fetchCity('ottawa');
+    } else {
+        display5DayForecastCard(dataHistoryArray[cityToDisplay].city.name);
+    }
     displaySearchHistory();
     
     const srcButton = $('#btn-search1');
