@@ -1,17 +1,10 @@
-var searchHistoryList = JSON.parse(localStorage.getItem('searchHistory'));
 const searchHistoryEl = $('#searchHistory');
 var dataHistoryArray = JSON.parse(localStorage.getItem('dataHistory'));
+const cardArea = $('#forecastCards');
 
 if(!dataHistoryArray) {
     dataHistoryArray = [];
 }
-// fetch('https://api.openweathermap.org/data/2.5/forecast?lat=44.34&lon=10.99&appid=f33bf20affa316ba4d95961d5e07550c')
-//     .then(function(response) {
-//         return response.json();
-//     })
-//     .then(function(data) {
-//         console.log(data);
-//     })
 
 //http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
 //response.lat
@@ -41,7 +34,7 @@ function displaySearchHistory() {
 
 function displayForecastCard(city) {
     // everything is temporary for now until i start fetching from the api
-    const emoji = 'h'
+    var emoji = emojiDefine(city.list[0].weather[0].id)
     const mainCardCity = $('#cityName');
     const mainCardHumidity = $('#humidity');
     const mainCardTemp = $('#temp');
@@ -57,11 +50,38 @@ function displayForecastCard(city) {
 
 }
 
-const cardArea = $('#forecastCards');
+function emojiDefine(id) {
+    var emoji = '';
+
+    if (id >= 500 && id < 531) {
+        //rain
+        emoji = '🌧️';
+    } else if (id >= 801 && id < 805) {
+        //clouds
+        if(id === 801) {
+            emoji = '🌤️';
+        } else if(id === 802) {
+            emoji = '⛅';
+        } else if(id === 803) {
+            emoji = '🌥️';
+        } else if(id === 804) {
+            emoji = '☁️';
+        } 
+    } else if (id >= 600 && id < 623 ) {
+        //snow
+        emoji = '🌨️';
+    } else if (id >= 200 && id < 233) {
+        //thunder
+        emoji = '⛈️';
+    } else if (id === 800) {
+        emoji = '☀️';
+    }
+    return emoji;
+}
 
 function generateCard(city) {
     // everything is temporary for now until i start fetching from the api
-    const emoji = 'h';
+    const emoji = emojiDefine(city.weather[0].id)
     const cardDate = $('<p>').addClass('fw-bold m-0 p-1 ps-0');
     const cardEmoji = $('<p>').addClass('m-0 p-1 ps-0');
     const cardTemp = $('<p>').addClass('m-0 p-1 ps-0');
@@ -132,9 +152,9 @@ function fetchCity (city) {
 }
 
 $(document).ready(function (){
-    // displayForecastCard();
+    const cityToDisplay = dataHistoryArray.length - 1;
+    display5DayForecastCard(dataHistoryArray[cityToDisplay].city.name);
     displaySearchHistory();
-    // $('.btn-search').click(saveSearchHistory);
     
     const srcButton = $('#btn-search1');
     const cityButton = $('#searchHistory');
