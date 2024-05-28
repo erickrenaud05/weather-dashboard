@@ -1,6 +1,7 @@
 var searchHistoryList = JSON.parse(localStorage.getItem('searchHistory'));
 const searchHistoryEl = $('#searchHistory');
 var dataHistoryArray = JSON.parse(localStorage.getItem('dataHistory'));
+
 if(!dataHistoryArray) {
     dataHistoryArray = [];
 }
@@ -29,7 +30,8 @@ if(!dataHistoryArray) {
 
 function displaySearchHistory() {
     searchHistoryEl.empty();
-    for (var city of dataHistoryArray) {
+    const dataHistoryArrayReversed = dataHistoryArray.toReversed();  
+    for (var city of dataHistoryArrayReversed) {
         const searchCard = $('<button>').addClass('border m-2 bg-secondary text-center rounded-1').attr('type', 'button');
         searchCard.attr('id', city.city.name);
         searchCard.text(city.city.name);
@@ -102,6 +104,9 @@ function fetchCity (city) {
                 return response.json() 
                 .then(function(data) {  
                     dataHistoryArray.push(data);
+                    if(dataHistoryArray.length > 7) {
+                        dataHistoryArray.shift();
+                    }
                     localStorage.setItem('dataHistory', JSON.stringify(dataHistoryArray));
                     cardArea.empty();
                     displayForecastCard(data);
