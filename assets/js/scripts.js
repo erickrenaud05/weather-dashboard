@@ -80,10 +80,15 @@ function generateCard(city) {
 }
 
 function display5DayForecastCard (citySearched) {
-    cardArea.empty();
+    var counter = 0;
     for (data of dataHistoryArray) {
         if(citySearched.toLowerCase() === data.city.name.toLowerCase()) {
+            cardArea.empty();
+            const tmp = dataHistoryArray.splice(counter, 1);
+            dataHistoryArray.push(tmp[0]);
+            displaySearchHistory();
             if(dayjs().diff(dayjs(data.list[0].dt_txt), 'd') < 1){
+                localStorage.setItem('dataHistory', JSON.stringify(dataHistoryArray));
                 displayForecastCard(data);
                 for (let i = 0; i < 40; i++){
                     if(i%8 === 0) {
@@ -93,6 +98,7 @@ function display5DayForecastCard (citySearched) {
                 return 0;
             } 
         }
+        counter++;
     }
     fetchCity(citySearched)
 }
@@ -141,7 +147,11 @@ $(document).ready(function (){
     srcButton[0].addEventListener('click', function(event){
         event.preventDefault();
         const citySearched = $('#citySearch').val();
-        display5DayForecastCard(citySearched);
+        if(citySearched === '') {
+            alert('please enter city before pressing search');
+            return;
+        } 
+       display5DayForecastCard(citySearched);
     });
 });
 
