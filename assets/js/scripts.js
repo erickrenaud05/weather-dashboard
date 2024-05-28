@@ -123,7 +123,7 @@ $(document).ready(function (){
         cardArea.empty();
         for (data of dataHistoryArray) {
             if(citySearched.toLowerCase() === data.city.name.toLowerCase()) {
-                if(dayjs(data.list[0].dt_txt).diff(dayjs(), 'd') < 1){
+                if(dayjs().diff(dayjs(data.list[0].dt_txt), 'd') < 1){
                     displayForecastCard(data);
                     for (let i = 0; i < 40; i++){
                         if(i%8 === 0) {
