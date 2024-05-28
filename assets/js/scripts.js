@@ -28,6 +28,7 @@ if(!dataHistoryArray) {
 //response.list[0-5].dt_txt for formatted date
 
 function displaySearchHistory() {
+    searchHistoryEl.empty();
     for (var city of dataHistoryArray) {
         const searchCard = $('<button>').addClass('border m-2 bg-secondary text-center rounded-1').attr('type', 'button');
         searchCard.attr('id', city.city.name);
@@ -76,8 +77,25 @@ function generateCard(city) {
     cardArea.append(cardSection);
 }
 
+function display5DayForecastCard (citySearched) {
+    cardArea.empty();
+    for (data of dataHistoryArray) {
+        if(citySearched.toLowerCase() === data.city.name.toLowerCase()) {
+            if(dayjs().diff(dayjs(data.list[0].dt_txt), 'd') < 1){
+                displayForecastCard(data);
+                for (let i = 0; i < 40; i++){
+                    if(i%8 === 0) {
+                        generateCard(data.list[i]);
+                    }
+                }
+                return 0;
+            } 
+        }
+    }
+    return 1;
+}
 
-function fetchCity (city) {
+function fetchCity (city) {  
     fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city},CA&units=metric&appid=f33bf20affa316ba4d95961d5e07550c`)
         .then(function(response) {
             if(response.status === 200) {
@@ -92,6 +110,7 @@ function fetchCity (city) {
                             generateCard(data.list[i]);
                         }
                     }
+                    displaySearchHistory();
                 })
             } else {
                 alert('invalid city, please enter a canadian city. Make sure the spelling is correct.')
@@ -109,39 +128,17 @@ $(document).ready(function (){
     const cityButton = $('#searchHistory');
 
     cityButton[0].addEventListener('click', function(event){
-        cardArea.empty();
-        for (data of dataHistoryArray) {
-            if(event.target.id === data.city.name) {
-                if(dayjs().diff(dayjs(data.list[0].dt_txt), 'd') < 1){
-                    displayForecastCard(data);
-                    for (let i = 0; i < 40; i++){   
-                        if(i%8 === 0) {
-                            generateCard(data.list[i]);
-                        }
-                    }
-                    return;
-                } 
-            }
-        }
+        display5DayForecastCard(event.target.id);
     })
+
     srcButton[0].addEventListener('click', function(event){
         event.preventDefault();
         const citySearched = $('#citySearch').val();
-        cardArea.empty();
-        for (data of dataHistoryArray) {
-            if(citySearched.toLowerCase() === data.city.name.toLowerCase()) {
-                if(dayjs().diff(dayjs(data.list[0].dt_txt), 'd') < 1){
-                    displayForecastCard(data);
-                    for (let i = 0; i < 40; i++){
-                        if(i%8 === 0) {
-                            generateCard(data.list[i]);
-                        }
-                    }
-                    return;
-                } 
-            }
+        var status =  display5DayForecastCard(citySearched);
+        
+        if(status === 1) {
+            fetchCity(citySearched);        
         }
-        fetchCity(citySearched);
     });
 });
 
