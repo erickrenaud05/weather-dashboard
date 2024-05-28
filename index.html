@@ -14,41 +14,39 @@
     </header>
     <div class="container-fluid">
         <div class="row">
-            <aside class="column col-2">
+            <aside class="column col-3 px-2">
                 <!-- search bar -->
-                <nav class="navbar">
+                <nav class="navbar pt-0 pb-3">
                     <div class="container-fluid">
                       <form class="row gy-2" role="search">
-                        <label for="citySearch">Search for a city:</label>
+                        <label for="citySearch" class="fs-2 fw-bold">Search for a city:</label>
                         <input id="citySearch" class="form-control " type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-search" id="btn-search1"type="submit">Search</button>
                       </form>
                     </div>
                   </nav>
                 <!-- search history -->
-                <div class="card border-0" id="searchHistory">
+                <div class="card border-0 border-top border-3 rounded-0 pt-2" id="searchHistory">
                       <!-- <li class="list-group-item">An item</li>
                       <li class="list-group-item">A second item</li>
                       <li class="list-group-item">A third item</li> -->
                       <!-- list will be dynamically appended with js -->
                 </div>
             </aside>
-            <main class="column col-10">
+            <main class="column col-8 px-2 gy-2">
                 <!-- city info -->
                 <div class="card rounded-0 border-dark">
-                    <div class="card-body" id="mainCard">
+                    <div class="card-body p-1" id="mainCard">
                       <h3 id="cityName"></h3>
-                      <h5 id="emoji"></h5>
-                      <h5 id="date"></h5>
-                      <h5 id="temp"></h5>
-                      <h5 id="wind"></h5>
-                      <h5 id="humidity"></h5>
+                      <p id="temp" class="fs-5"></p>
+                      <p id="wind" class="fs-5"></p>
+                      <p id="humidity" class="fs-5"></p>
                     </div>
                   </div>
                 <!-- 5 day forecast card -->
-                <h3 class="my-2">5 day forecast: </h3>
-                  <div class="container">
-                    <div class="row justify-content-between" id="forecastCards">
+                <h3 class="my-2">5-day forecast: </h3>
+                  <div class="container-fluid p-0 ">
+                    <div class="row justify-content-between gx-0" id="forecastCards">
                         <!-- dynamic card creation -->
                     </div>
                   </div>

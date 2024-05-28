@@ -32,7 +32,7 @@ function displaySearchHistory() {
     searchHistoryEl.empty();
     const dataHistoryArrayReversed = dataHistoryArray.toReversed();  
     for (var city of dataHistoryArrayReversed) {
-        const searchCard = $('<button>').addClass('border m-2 bg-secondary text-center rounded-1').attr('type', 'button');
+        const searchCard = $('<button>').addClass('border my-2 text-center rounded-1').attr('type', 'button');
         searchCard.attr('id', city.city.name);
         searchCard.text(city.city.name);
         searchHistoryEl.append(searchCard);
@@ -41,20 +41,19 @@ function displaySearchHistory() {
 
 function displayForecastCard(city) {
     // everything is temporary for now until i start fetching from the api
-    const mainCard = $('#mainCard');
+    const emoji = 'h'
     const mainCardCity = $('#cityName');
+    const mainCardHumidity = $('#humidity');
     const mainCardTemp = $('#temp');
     const mainCardWind = $('#wind');
-    const mainCardHumidity = $('#humidity');
-    const mainCardDate = $('#date');
-    const mainCardEmoji = $('#emoji');
 
-    mainCardCity.text(city.city.name);
-    mainCardDate.text(city.list[0].dt_txt);
-    mainCardEmoji.text('emoji');
-    mainCardTemp.text(city.list[0].main.temp);
-    mainCardWind.text(city.list[0].wind.speed);
-    mainCardHumidity.text(city.list[0].main.humidity);
+    const windSpeed = city.list[0].wind.speed * 2.23693629;
+
+    mainCardCity.addClass('fw-bold');
+    mainCardCity.text(`${city.city.name} (${dayjs(city.list[0].dt_txt).format('M/D/YYYY')}) ${emoji}`);
+    mainCardTemp.text(`Temp: ${city.list[0].main.temp}ºC`);
+    mainCardWind.text(`Wind:  ${windSpeed.toFixed(2)} MPH`);
+    mainCardHumidity.text(`Humidity: ${city.list[0].main.humidity}%`);
 
 }
 
@@ -62,18 +61,20 @@ const cardArea = $('#forecastCards');
 
 function generateCard(city) {
     // everything is temporary for now until i start fetching from the api
-    const cardDate = $('<p>').addClass('fw-bold m-0');
-    const cardEmoji = $('<p>').addClass('m-0');
-    const cardTemp = $('<p>').addClass('m-0');
-    const cardWind = $('<p>').addClass('m-0');
-    const cardHumidity = $('<p>').addClass('m-0 mb-1');
-    const cardSection = $('<section>').addClass('card col-2 bg-secondary rounded-0 text-white');
+    const emoji = 'h';
+    const cardDate = $('<p>').addClass('fw-bold m-0 p-1 ps-0');
+    const cardEmoji = $('<p>').addClass('m-0 p-1 ps-0');
+    const cardTemp = $('<p>').addClass('m-0 p-1 ps-0');
+    const cardWind = $('<p>').addClass('m-0 p-1 ps-0');
+    const cardHumidity = $('<p>').addClass('m-0 p-1 ps-0 pb-3');
+    const cardSection = $('<section>').addClass('card col-lg-2 col-md-5 my-3 rounded-0 text-white px-1 myCards');
+    const windSpeed = city.wind.speed * 2.23693629;
 
-    cardDate.text(city.dt_txt);
-    cardEmoji.text('emoji');
-    cardTemp.text(city.main.temp);
-    cardWind.text(city.wind.speed);
-    cardHumidity.text(city.main.humidity);
+    cardDate.text(`${dayjs(city.dt_txt ).format('M/D/YYYY')}`);
+    cardEmoji.text(emoji);
+    cardTemp.text(`Temp: ${city.main.temp}ºC`);
+    cardWind.text(`Wind: ${windSpeed.toFixed(2)} MPH`);
+    cardHumidity.text(`Humidity: ${city.main.humidity}%`);
 
     cardSection.append(cardDate, cardEmoji, cardTemp, cardWind, cardHumidity);
     cardArea.append(cardSection);
