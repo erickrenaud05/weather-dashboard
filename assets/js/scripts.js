@@ -27,26 +27,11 @@ if(!dataHistoryArray) {
 //response.list[0-5].sys.pod
 //response.list[0-5].dt_txt for formatted date
 
-
-function saveSearchHistory() {
-    const newCity = $('#citySearch').val();
-    // later this will return not only if null but if city is invalid
-    if (!newCity) {
-        return;
-    }
-    searchHistoryList.push(newCity);
-    localStorage.setItem('searchHistory', JSON.stringify(searchHistoryList));
-}
-
 function displaySearchHistory() {
-    if(!searchHistoryList){
-        searchHistoryList = [];
-    }
-    
-    for (var search of searchHistoryList) {
+    for (var city of dataHistoryArray) {
         const searchCard = $('<button>').addClass('border m-2 bg-secondary text-center rounded-1').attr('type', 'button');
-        searchCard.attr('id', search);
-        searchCard.text(search);
+        searchCard.attr('id', city.city.name);
+        searchCard.text(city.city.name);
         searchHistoryEl.append(searchCard);
     }
 }
@@ -95,20 +80,24 @@ function generateCard(city) {
 function fetchCity (city) {
     fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city},CA&units=metric&appid=f33bf20affa316ba4d95961d5e07550c`)
         .then(function(response) {
-            return response.json();
-        })
-        .then(function(data) {
-            dataHistoryArray.push(data);
-            localStorage.setItem('dataHistory', JSON.stringify(dataHistoryArray));
-            cardArea.empty();
-            displayForecastCard(data);
-            for (let i = 0; i < 40; i++){
-                if(i%8 === 0) {
-                    generateCard(data.list[i]);
-                }
+            if(response.status === 200) {
+                return response.json() 
+                .then(function(data) {  
+                    dataHistoryArray.push(data);
+                    localStorage.setItem('dataHistory', JSON.stringify(dataHistoryArray));
+                    cardArea.empty();
+                    displayForecastCard(data);
+                    for (let i = 0; i < 40; i++){
+                        if(i%8 === 0) {
+                            generateCard(data.list[i]);
+                        }
+                    }
+                })
+            } else {
+                alert('invalid city, please enter a canadian city. Make sure the spelling is correct.')
+                return;
             }
         })
-             
 }
 
 $(document).ready(function (){
@@ -117,6 +106,24 @@ $(document).ready(function (){
     // $('.btn-search').click(saveSearchHistory);
     
     const srcButton = $('#btn-search1');
+    const cityButton = $('#searchHistory');
+
+    cityButton[0].addEventListener('click', function(event){
+        cardArea.empty();
+        for (data of dataHistoryArray) {
+            if(event.target.id === data.city.name) {
+                if(dayjs().diff(dayjs(data.list[0].dt_txt), 'd') < 1){
+                    displayForecastCard(data);
+                    for (let i = 0; i < 40; i++){   
+                        if(i%8 === 0) {
+                            generateCard(data.list[i]);
+                        }
+                    }
+                    return;
+                } 
+            }
+        }
+    })
     srcButton[0].addEventListener('click', function(event){
         event.preventDefault();
         const citySearched = $('#citySearch').val();
